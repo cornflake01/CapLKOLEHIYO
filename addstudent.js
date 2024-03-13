@@ -2,7 +2,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-//import { getAuth } from "firebase/auth"
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"; // Update import statement for Auth functionality
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyA4SI2yXymjL4cwtVvKtCxGTQOeMvU968w",
@@ -19,10 +20,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getDatabase(app);
+const auth = getAuth(app); // Initialize Firebase Auth
 
-document.getElementById("submit").addEventListener('click', function(e) {
-    e.preventDefault();
-
+document.getElementById("createForm").addEventListener("submit", function(event) {
+    event.preventDefault();
     const name = document.getElementById("name").value;
     const lrn = document.getElementById("lrn_number").value;
     const email = document.getElementById("email").value;
@@ -36,19 +37,31 @@ document.getElementById("submit").addEventListener('click', function(e) {
 });
 
 function addStudent(name, lrn, email, strand, grade, section, username, password) {
-    set(ref(db, 'studentInfo/' + username), {
-        name: name,
-        lrn: lrn,
-        email: email,
-        strand: strand,
-        grade: grade,
-        section: section,
-        username: username,
-        password: password
-    }).then(() => {
-        console.log("Student added successfully");
-        document.getElementById("createForm").reset();
-    }).catch((error) => {
-        console.error("Error adding student: ", error);
-    });
+    createUserWithEmailAndPassword(auth, email, password) // Use 'auth' instead of 'app.auth()'
+        .then((userCredential) => {
+            const user = userCredential.user;
+            set(ref(db, 'students/' + user.uid), { // Use 'user.uid' instead of 'user.email'
+                name: name,
+                lrn: lrn,
+                email: email,
+                strand: strand,
+                grade: grade,
+                section: section,
+                username: username,
+                password: password
+            }).then(() => {
+                console.log("Student added successfully.");
+                document.getElementById("createForm").reset();
+                window.location.href = "studentinfo.html"; // Redirect to studentinfo.html
+            }).catch((error) => {
+                console.error("Error adding student: ", error);
+            });
+        })
+        .catch((error) => {
+            console.error("Error creating user: ", error);
+        });
+}
+
+function goToDashboard() {
+    window.location.href = "dashboard.html";
 }

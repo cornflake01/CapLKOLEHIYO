@@ -61,30 +61,15 @@
                 <textarea class="form-control" id="announcementDescription" name="announcementDescription" rows="4" required></textarea>
             </div>
 
-            <button type="submit" class="btn btn-custom mr-2">Submit</button>
-            <a href="dashboard.html" class="btn btn-custom">Go to Dashboard</a>
+            <button type="submit" class="btn btn-custom mr-2">Add Announcement</button>
+            <a href="announcements.html" class="btn btn-custom">Go to Announcements</a>
         </form>
+    </div>
 
-    <!-- Bootstrap JS and dependencies (optional) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Firebase JavaScript SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js"></script>
 
-    <script>
-        // Function to handle form submission
-        document.getElementById("announcementForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent default form submission
-            var title = document.getElementById("announcementTitle").value; // Get the value from the title field
-            var date = document.getElementById("announcementDate").value; // Get the value from the date field
-            var description = document.getElementById("announcementDescription").value; // Get the value from the description field
-
-            // Update the announcement text with title, date, and description
-            document.getElementById("announcementTitleText").innerText = "Title: " + title;
-            document.getElementById("announcementDateText").innerText = "Date: " + date;
-            document.getElementById("announcementDescriptionText").innerText = "Description: " + description;
-
-            document.getElementById("announcementForm").reset(); // Clear the form
-        });
-    </script>
+    <script type="module" src="addannouncement.js"></script>
 </body>
 </html>

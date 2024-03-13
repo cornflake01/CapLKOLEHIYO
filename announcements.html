@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .announcement-title {
+            color: #002145;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .announcement-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .announcement-table th,
+        .announcement-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .announcement-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="announcement-title">L-KOLEHIYO Announcements</h1>
+
+        <table class="announcement-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody id="announcementTableBody">
+                <!-- Announcements will be populated here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Firebase JavaScript SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4SI2yXymjL4cwtVvKtCxGTQOeMvU968w",
+            authDomain: "l-kolehiyo-capstone.firebaseapp.com",
+            databaseURL: "https://l-kolehiyo-capstone-default-rtdb.firebaseio.com",
+            projectId: "l-kolehiyo-capstone",
+            storageBucket: "l-kolehiyo-capstone.appspot.com",
+            messagingSenderId: "1032233320347",
+            appId: "1:1032233320347:web:109c19d37aec6d0364eb3e",
+            measurementId: "G-D5R84EF8KY"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Load announcements from Firebase
+        db.ref('announcements').on('value', function(snapshot) {
+            const announcements = snapshot.val();
+            const announcementTableBody = document.getElementById('announcementTableBody');
+
+            // Clear previous data
+            announcementTableBody.innerHTML = '';
+
+            // Populate table with announcements
+            for (const key in announcements) {
+                const announcement = announcements[key];
+                const row = `
+                    <tr>
+                        <td>${announcement.title}</td>
+                        <td>${announcement.date}</td>
+                        <td>${announcement.description}</td>
+                    </tr>
+                `;
+                announcementTableBody.innerHTML += row;
+            }
+        });
+    </script>
+</body>
+</html>
