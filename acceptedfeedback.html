@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L-KOLEHIYO Pending Feedback Requests</title>
+    <title>L-KOLEHIYO Accepted Feedbacks</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
           integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
           crossorigin="anonymous"/>
@@ -79,40 +79,17 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s ease;
+            margin-right: 10px;
         }
 
         .back-btn input[type="button"]:hover {
             background-color: #00172a;
         }
-
-        .action-btns button {
-            margin: 0 5px;
-            padding: 8px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-
-        .action-btns button:hover {
-            background-color: #45a049;
-        }
-
-        .action-btns button.ignore {
-            background-color: #f44336;
-        }
-
-        .action-btns button.ignore:hover {
-            background-color: #d32f2f;
-        }
     </style>
 </head>
 <body>
-<h1>L-KOLEHIYO Pending Feedback Requests</h1>
-<table id="feedbackTable">
+<h1>L-KOLEHIYO Accepted Feedbacks</h1>
+<table id="acceptedFeedbackTable">
     <thead>
     <tr>
         <th>Name</th>
@@ -120,7 +97,6 @@
         <th>Rating</th>
         <th>Description</th>
         <th>Date</th>
-        <th>Action</th>
     </tr>
     </thead>
     <tbody>
@@ -147,61 +123,17 @@
         const firebaseApp = firebase.initializeApp(firebaseConfig);
         const database = firebaseApp.database();
 
-        const feedbackTable = document.getElementById('feedbackTable').getElementsByTagName('tbody')[0];
+        const acceptedFeedbackTable = document.getElementById('acceptedFeedbackTable').getElementsByTagName('tbody')[0];
 
-        // Function to move feedback to accepted feedback
-        function moveFeedbackToAccepted(row) {
-            const name = row.cells[0].textContent;
-            const email = row.cells[1].textContent;
-            const rating = row.cells[2].textContent;
-            const description = row.cells[3].textContent;
-            const date = row.cells[4].textContent;
-
-            // Add the accepted feedback to the accepted feedback database
-            database.ref('accepted_feedbacks').push({
-                name: name,
-                email: email,
-                rating: rating,
-                description: description,
-                timestamp: new Date().getTime()
-            });
-
-            // Remove the feedback from the pending feedback database
-            database.ref('feedbacks').orderByChild('email').equalTo(email).once('value', function(snapshot) {
-                snapshot.forEach(function(childSnapshot) {
-                    const key = childSnapshot.key;
-                    database.ref('feedbacks').child(key).remove();
-                    row.remove();
-                });
-            });
-        }
-
-        database.ref('feedbacks').once('value', function (snapshot) {
+        database.ref('accepted_feedbacks').once('value', function (snapshot) {
             snapshot.forEach(function (childSnapshot) {
                 const childData = childSnapshot.val();
-                const row = feedbackTable.insertRow();
+                const row = acceptedFeedbackTable.insertRow();
                 row.insertCell(0).textContent = childData.name || '';
-                row.insertCell(1).textContent = childData.email || ''; // Make sure email field is present in the data
+                row.insertCell(1).textContent = childData.email || '';
                 row.insertCell(2).textContent = childData.rating || '';
                 row.insertCell(3).textContent = childData.description || '';
-                row.insertCell(4).textContent = childData.timestamp ? new Date(childData.timestamp).toLocaleString() : '';
-                const actionCell = row.insertCell(5);
-                const acceptButton = document.createElement('button');
-                acceptButton.textContent = 'Accept';
-                acceptButton.classList.add('accept');
-                acceptButton.onclick = function() {
-                    moveFeedbackToAccepted(row);
-                };
-                const ignoreButton = document.createElement('button');
-                ignoreButton.textContent = 'Ignore';
-                ignoreButton.classList.add('ignore');
-                ignoreButton.onclick = function() {
-                    const row = this.parentNode.parentNode;
-                    row.remove();
-                    // You can add logic here to handle ignoring the feedback
-                };
-                actionCell.appendChild(acceptButton);
-                actionCell.appendChild(ignoreButton);
+                row.insertCell(4).textContent = childData.date ? new Date(childData.date).toLocaleString() : '';
             });
         });
     });
@@ -213,11 +145,9 @@
 </script>
 
 <div class="back-btn">
-    <form>
-        <input type="button" value="Accepted Feedbacks" onclick="window.location.href = 'acceptedfeedback.html'">
-        <input type="button" value="Back to Dashboard" onclick="window.location.href = 'dashboard.html'">
-        <input type="button" value="Print" onclick="printTable()">
-    </form>
+    <input type="button" value="Feedback Requests" onclick="window.location.href = 'feedbacks.html'">
+    <input type="button" value="Back to Dashboard" onclick="window.location.href = 'dashboard.html'">
+    <input type="button" value="Print" onclick="printTable()">
 </div>
 
 </body>
